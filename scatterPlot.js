@@ -1,7 +1,6 @@
 // Scatter Plot
 function loadScatterPlot(idContainer, title, series) {
 
-    console.log(series);
     Highcharts.chart(idContainer, {
         chart: {
             type: 'scatter',

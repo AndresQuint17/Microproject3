@@ -69,7 +69,7 @@ function getTimeDataSeriesUrea($json_data)
 }
 
 
-## Algoritmo para formatear los datos para la gráfica de tiempo
+## Algoritmo para formatear los datos para la gráfica de distribución Urea VS CPK
 function getCpkVsUrea($json_data)
 {
     $data = array();
@@ -105,6 +105,52 @@ function getCpkVsUrea($json_data)
                 array_push($series[0]['data'][$cont], $v);
             }
         }
+        $cont++;
+    }
+
+    return $series = json_encode($series);
+}
+
+## Algoritmo para formatear los datos para la gráfica de Gausiana
+function getGaussianDataUrea($json_data)
+{
+    $data = array();
+    foreach ($json_data as $jugador) {
+        for ($i = 0; $i < sizeof($jugador); $i++) {
+            if (!empty($jugador[$i]['conf_criteria'])) {
+                if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("Urea")) == 0) {
+                    array_push($data, round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2));
+                }
+            }
+        }
+    }
+    $series = array();
+    $cont = 0;
+    foreach ($data as $v) {
+        array_push($series, $v);
+        $cont++;
+    }
+    
+    return $series = json_encode($series);
+}
+
+## Algoritmo para formatear los datos para la gráfica de Gausiana
+function getGaussianDataCPK($json_data)
+{
+    $data = array();
+    foreach ($json_data as $jugador) {
+        for ($i = 0; $i < sizeof($jugador); $i++) {
+            if (!empty($jugador[$i]['conf_criteria'])) {
+                if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("CPK")) == 0) {
+                    array_push($data, round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2));
+                }
+            }
+        }
+    }
+    $series = array();
+    $cont = 0;
+    foreach ($data as $v) {
+        array_push($series, $v);
         $cont++;
     }
 

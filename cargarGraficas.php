@@ -55,3 +55,11 @@ function scatter_chart($idContainer, $title, $series)
                 loadScatterPlot("' . $idContainer . '", "' . $title . '",' . $series . ');
           </script>';
 }
+
+function gaussian_chart($idContainer, $title, $series, $titleData, $titleBellCurve)
+{
+    echo '<script type="text/javascript" src="./gaussianChart.js"></script>';
+    echo '<script type="text/javascript">
+                loadGaussianChart("' . $idContainer . '", "' . $title . '",' . $series . ', "' . $titleData . '", "' . $titleBellCurve . '");
+          </script>';
+}

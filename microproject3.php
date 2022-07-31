@@ -4,6 +4,7 @@
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/histogram-bellcurve.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
@@ -71,6 +72,16 @@
                         <div id="scatterPlotUreaVsCpk"></div>
                     </figure>
                 </div>
+                <div class="col-6">
+                    <figure class="highcharts-figure">
+                        <div id="GaussianUrea"></div>
+                    </figure>
+                </div>
+                <div class="col-6">
+                    <figure class="highcharts-figure">
+                        <div id="GaussianCpk"></div>
+                    </figure>
+                </div>
             </div>
         </div>
 
@@ -87,6 +98,8 @@
         time_chart("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPK($json_dataCpkUrea));
         time_chart("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUrea($json_dataCpkUrea));
         scatter_chart("scatterPlotUreaVsCpk","Urea VS CPK", getCpkVsUrea($json_dataCpkUrea));
+        gaussian_chart("GaussianUrea", "Urea", getGaussianDataUrea($json_dataCpkUrea), "Urea mmol/L", "Distribución Gaussiana");
+        gaussian_chart("GaussianCpk", "CPK", getGaussianDataCPK($json_dataCpkUrea), "CPK units/L", "Distribución Gaussiana");
 
         ?>
     </div>
