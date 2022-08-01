@@ -43,7 +43,13 @@
                 <!-- MICROPROJECT 3 -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item"><a class="nav-link" href="microproject3.php">Time Series Data</a></li>
+                        <li class="nav-item"><a class="nav-link" href="microproject3.php">Single Player</a></li>
+                    </ul>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a class="nav-link" href="microproject3.php">Multiplayer Player</a></li>
                     </ul>
                 </div>
             </nav>

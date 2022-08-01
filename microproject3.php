@@ -49,7 +49,17 @@
                         <label for="customRange" class="form-label">ID Player</label>
                         <input type="range" name="customRange" id="customRange" class="form-range" min="287" max="316" value="287" onchange="document.getElementById('rangeValue').value=value" />
                         <input type="text" id="rangeValue" name="rangeValue" for="customRange" value="287" disabled="true">
-                        <button type="submit">Buscar</button>
+                    </div>
+                    <div class="col-3">
+                        <label for="dateDesde" class="form-label">Fecha Desde</label>
+                        <input type="date" name="dateDesde" id="dateDesde" class="form-control" value="2017-01-01" min="2017-01-01" max="2017-12-31" />
+                    </div>
+                    <div class="col-3">
+                        <label for="dateHasta" class="form-label">Fecha Hasta</label>
+                        <input type="date" name="dateHasta" id="dateHasta" class="form-control" value="2017-01-01" min="2017-01-01" max="2017-12-31" />
+                    </div>
+                    <div class="col-3 d-flex align-items-center">
+                        <button type="submit" id="buscar" class="btn btn-primary">Buscar</button>
                     </div>
                 </div>
             </div>

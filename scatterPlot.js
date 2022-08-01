@@ -1,5 +1,6 @@
 // Scatter Plot
 function loadScatterPlot(idContainer, title, series) {
+    
 
     Highcharts.chart(idContainer, {
         chart: {
