@@ -40,11 +40,19 @@ function load_horizontal_bar_chart($idContainer, $title, $series, $resolution)
           </script>';
 }
 
-function time_chart($idContainer, $title, $series)
+function time_chart($idContainer, $title, $series, $tipo)
 {
     echo '<script type="text/javascript" src="./timeIrregularIntervalsChart.js"></script>';
     echo '<script type="text/javascript">
-                loadTimeChart("' . $idContainer . '", "' . $title . '",' . $series . ');
+                loadTimeChart("' . $idContainer . '", "' . $title . '",' . $series . ',"'.$tipo.'");
+          </script>';
+}
+
+function time_chart_compare_players($idContainer, $title, $series, $tipo)
+{
+    echo '<script type="text/javascript" src="./timePlot.js"></script>';
+    echo '<script type="text/javascript">
+                loadTimeChartComparePlayers("' . $idContainer . '", "' . $title . '",' . $series . ',"'.$tipo.'");
           </script>';
 }
 
