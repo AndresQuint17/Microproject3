@@ -1,5 +1,5 @@
 // Time Data With Irregular Intervals
-function loadTimeChart(idContainer, title, series) {
+function loadTimeChart(idContainer, title, series, tipo) {
 
     let buttonBuscar = document.querySelector('#buscar');
     buttonBuscar.addEventListener('click', (event) => {
@@ -46,7 +46,7 @@ function loadTimeChart(idContainer, title, series) {
                     text: title
                 },
                 subtitle: {
-                    text: 'Irregular time data in Highcharts JS'
+                    text: ''
                 },
                 xAxis: {
                     type: 'datetime',
@@ -60,7 +60,7 @@ function loadTimeChart(idContainer, title, series) {
                 },
                 yAxis: {
                     title: {
-                        text: 'Snow depth (m)'
+                        text: tipo
                     },
                     min: 0
                 },
@@ -128,7 +128,7 @@ function loadTimeChart(idContainer, title, series) {
             text: title
         },
         subtitle: {
-            text: 'Irregular time data in Highcharts JS'
+            text: ''
         },
         xAxis: {
             type: 'datetime',
@@ -142,7 +142,7 @@ function loadTimeChart(idContainer, title, series) {
         },
         yAxis: {
             title: {
-                text: 'Snow depth (m)'
+                text: tipo
             },
             min: 0
         },

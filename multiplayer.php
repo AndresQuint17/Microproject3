@@ -38,7 +38,7 @@
                     </ul>
                     <!-- MULTIPLAYER -->
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item"><a class="nav-link" href="multiplayer.php">Multiplayer</a></li>
+                        <li class="nav-item"><a class="nav-link" href="microproject3.php">Singleplayer</a></li>
                     </ul>
                 </div>
             </nav>
@@ -47,21 +47,16 @@
         <form action="" method="post">
             <div class="container">
                 <div class="row">
-                    <div class="col-3">
-                        <label for="customRange" class="form-label">ID Player</label>
-                        <input type="range" name="customRange" id="customRange" class="form-range" min="287" max="316" value="287" onchange="document.getElementById('rangeValue').value=value" />
-                        <input type="text" id="rangeValue" name="rangeValue" for="customRange" value="287" disabled="true">
+                    <div class="col-10">
+                        <div class="input-group">
+                            <span class="input-group-text">First Player - Second Player - Third Player</span>
+                            <input type="text" id="firstPlayer" name="firstPlayer" aria-label="First player" class="form-control">
+                            <input type="text" id="secondPlayer" name="secondPlayer" aria-label="Second player" class="form-control">
+                            <input type="text" id="thirdPlayer" name="thirdPlayer" aria-label="Third player" class="form-control">
+                        </div>
                     </div>
-                    <div class="col-3">
-                        <label for="dateDesde" class="form-label">Fecha Desde</label>
-                        <input type="date" name="dateDesde" id="dateDesde" class="form-control" value="2017-01-01" min="2017-01-01" max="2017-12-31" />
-                    </div>
-                    <div class="col-3">
-                        <label for="dateHasta" class="form-label">Fecha Hasta</label>
-                        <input type="date" name="dateHasta" id="dateHasta" class="form-control" value="2017-01-01" min="2017-01-01" max="2017-12-31" />
-                    </div>
-                    <div class="col-3 d-flex align-items-center">
-                        <button type="submit" id="buscar" class="btn btn-primary">Buscar</button>
+                    <div class="col-2 d-flex align-items-center">
+                        <button type="submit" id="comparar" class="btn btn-primary">Comparar</button>
                     </div>
                 </div>
             </div>
@@ -98,21 +93,19 @@
         </div>
 
         <?php
-        //Assign the value to 287 or the value defined in the $_POST variable.
-        $idPlayer = 287;
-        if (isset($_POST['customRange'])) {
-            $idPlayer =  $_POST['customRange'];
+        if (isset($_POST['firstPlayer'])) {
+            //print_r($_POST);
+            $idPlayer =  $_POST['firstPlayer'];
+
+            require_once('player.php');
+            require_once('cargarGraficas.php');
+
+            time_chart_compare_players("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPKComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "CPK units/L");
+            time_chart_compare_players("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUreaComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "Urea mmol/L.");
+            scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUreaComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']));
+            //gaussian_chart("GaussianUrea", "Urea", getGaussianDataUreaComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "Urea mmol/L", "Distribución Gaussiana");
+            //gaussian_chart("GaussianCpk", "CPK", getGaussianDataCPKComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "CPK units/L", "Distribución Gaussiana");
         }
-
-        require_once('player.php');
-        require_once('cargarGraficas.php');
-
-        time_chart("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPK($json_dataCpkUrea), "CPK units/L");
-        time_chart("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUrea($json_dataCpkUrea), "Urea mmol/L.");
-        scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUrea($json_dataCpkUrea));
-        gaussian_chart("GaussianUrea", "Urea", getGaussianDataUrea($json_dataCpkUrea), "Urea mmol/L", "Distribución Gaussiana");
-        gaussian_chart("GaussianCpk", "CPK", getGaussianDataCPK($json_dataCpkUrea), "CPK units/L", "Distribución Gaussiana");
-
         ?>
     </div>
 </body>

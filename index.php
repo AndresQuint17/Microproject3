@@ -34,23 +34,26 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <!-- CARGAR ARCHIVO DE CONFIGURACION -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <!-- CARGAR ARCHIVO DE CONFIGURACION -->
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item"><a class="nav-link" href="cargarArchivo.php">Cargar Archivo</a></li>
                     </ul>
-                </div>
-                <!-- MICROPROJECT 3 -->
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <!-- SINGLEPLAYER -->
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item"><a class="nav-link" href="microproject3.php">Single Player</a></li>
                     </ul>
+                    <!-- MULTIPLAYER -->
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a class="nav-link" href="multiplayer.php">Multiplayer Player</a></li>
+                    </ul>
+                </div>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    
                 </div>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item"><a class="nav-link" href="microproject3.php">Multiplayer Player</a></li>
-                    </ul>
+                    
                 </div>
             </nav>
         </div>
