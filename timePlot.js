@@ -5,7 +5,7 @@ function loadTimeChartComparePlayers(idContainer, title, series, tipo) {
         element.data.map((UreaPCK, index) => {
             let i=0;
             let fechaSplit = UreaPCK[i].split("-");
-            UreaPCK[i] = Date.UTC(+fechaSplit[0], +fechaSplit[1], +fechaSplit[2]);
+            UreaPCK[i] = Date.UTC(+fechaSplit[0], +fechaSplit[1]-1, +fechaSplit[2]);
             i++;
         });
     })

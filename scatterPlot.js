@@ -11,7 +11,7 @@ function loadScatterPlot(idContainer, title, series) {
             text: title
         },
         subtitle: {
-            text: 'Source: Heinz  2003'
+            text: ''
         },
         xAxis: {
             title: {

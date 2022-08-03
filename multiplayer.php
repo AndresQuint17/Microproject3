@@ -20,6 +20,12 @@
     <script type="text/javascript" src="./timeIrregularIntervalsChart.js"></script>
     <script type="text/javascript" src="./scatterPlot.js"></script>
 
+    <?php
+    $idPlayer = 287;
+    require_once('player.php');
+    require_once('cargarGraficas.php');
+    ?>
+
     <div id="wrapper">
         <div class="container" style="margin-top:10px;">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -47,13 +53,21 @@
         <form action="" method="post">
             <div class="container">
                 <div class="row">
-                    <div class="col-10">
-                        <div class="input-group">
-                            <span class="input-group-text">First Player - Second Player - Third Player</span>
-                            <input type="text" id="firstPlayer" name="firstPlayer" aria-label="First player" class="form-control">
-                            <input type="text" id="secondPlayer" name="secondPlayer" aria-label="Second player" class="form-control">
-                            <input type="text" id="thirdPlayer" name="thirdPlayer" aria-label="Third player" class="form-control">
-                        </div>
+                    <div class="col-6">
+                        <select class="form-select" name="selectPlayers[]" id="selectPlayers" multiple size="8" aria-label="size 3 multiple select example">
+                            <?php
+                            $playersNamesAndId = getPlayersNamesAndId($json_data_api_jugadores);
+                            $index = 0;
+                            foreach ($playersNamesAndId as $playerData) {
+                                if ($index == 0) {
+                                    echo '<option selected value="' . $playerData['id'] . '">' . $playerData['fullName'] . '</option>';
+                                } else {
+                                    echo '<option value="' . $playerData['id'] . '">' . $playerData['fullName'] . '</option>';
+                                }
+                                $index++;
+                            }
+                            ?>
+                        </select>
                     </div>
                     <div class="col-2 d-flex align-items-center">
                         <button type="submit" id="comparar" class="btn btn-primary">Comparar</button>
@@ -65,27 +79,27 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <figure class="highcharts-figure">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="timePlotCPK"></div>
                     </figure>
                 </div>
                 <div class="col-12">
-                    <figure class="highcharts-figure">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="timePlotUrea"></div>
                     </figure>
                 </div>
                 <div class="col-12">
-                    <figure class="highcharts-figure">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="scatterPlotUreaVsCpk"></div>
                     </figure>
                 </div>
                 <div class="col-6">
-                    <figure class="highcharts-figure">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="GaussianUrea"></div>
                     </figure>
                 </div>
                 <div class="col-6">
-                    <figure class="highcharts-figure">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="GaussianCpk"></div>
                     </figure>
                 </div>
@@ -93,16 +107,10 @@
         </div>
 
         <?php
-        if (isset($_POST['firstPlayer'])) {
-            //print_r($_POST);
-            $idPlayer =  $_POST['firstPlayer'];
-
-            require_once('player.php');
-            require_once('cargarGraficas.php');
-
-            time_chart_compare_players("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPKComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "CPK units/L");
-            time_chart_compare_players("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUreaComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "Urea mmol/L.");
-            scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUreaComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']));
+        if (isset($_POST['selectPlayers'])) {
+            time_chart_compare_players("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPKComparePlayers($_POST['selectPlayers']), "CPK units/L");
+            time_chart_compare_players("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUreaComparePlayers($_POST['selectPlayers']), "Urea mmol/L.");
+            scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUreaComparePlayers($_POST['selectPlayers']));
             //gaussian_chart("GaussianUrea", "Urea", getGaussianDataUreaComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "Urea mmol/L", "Distribución Gaussiana");
             //gaussian_chart("GaussianCpk", "CPK", getGaussianDataCPKComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "CPK units/L", "Distribución Gaussiana");
         }

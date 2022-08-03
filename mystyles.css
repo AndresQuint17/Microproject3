@@ -66,7 +66,6 @@
 }
 
 .div-border {
-    display: flex;
     border-style: double;
     border-color: #0d6efd;
     border-width: 2px;
@@ -75,9 +74,14 @@
     align-items: center;
 }
 
+.div-border-multiplayer {
+    border-style: double;
+    border-color: #0d6efd;
+}
+
 .container-graficas {
     margin-top: 15px !important;
-    min-width: 1300px !important;
+    min-width: 1000px !important;
     padding-top: 15px;
     padding-bottom: 15px;
     margin-bottom: 15px;
