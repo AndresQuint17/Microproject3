@@ -1,5 +1,9 @@
 <?php
 
+//  Consumir API de jugadores
+$data_api_jugadores = file_get_contents("http://evalua.fernandoyepesc.com/04_Modules/11_Evalua/10_WS/ws_evitems.php?&eboxid=89");
+//  Decodificar la data que viene en formato json
+$json_data_api_jugadores = json_decode($data_api_jugadores, true);
 
 //  Consumir API de jugadores
 $dataCpkUrea = file_get_contents("http://evalua.fernandoyepesc.com/04_Modules/11_Evalua/10_WS/ws_evalspereitem.php?uid=F1115&iid=" . $idPlayer . "&eid=40");
@@ -12,6 +16,20 @@ function getJsonDataPlayer($id)
     return json_decode($playerData, true);
 }
 
+function getPlayersNamesAndId($json_data)
+{
+    $playersNamesAndId = array();
+    foreach ($json_data as $jugador) {
+        if (!empty($jugador['valores'][0]['value']) && !empty($jugador['valores'][1]['value']) && !empty($jugador['id'])) {
+            $playerData = array();
+            $playerData['id'] = $jugador['id'];
+            $playerData['fullName'] = $jugador['valores'][0]['value'] . " " . $jugador['valores'][1]['value'];
+            array_push($playersNamesAndId, $playerData);
+        }
+    }
+    return $playersNamesAndId;
+}
+
 function getPlayerName($playerId)
 {
     //  Consumir API de jugadores
@@ -19,14 +37,14 @@ function getPlayerName($playerId)
     //  Decodificar la data que viene en formato json
     $json_data = json_decode($jugadores, true);
     foreach ($json_data as $jugador) {
-        if (!empty($jugador['id']) && !empty($jugador['valores'][0]['value']) && strcmp($jugador['id'], $playerId)==0) {
+        if (!empty($jugador['id']) && !empty($jugador['valores'][0]['value']) && strcmp($jugador['id'], $playerId) == 0) {
             return $jugador['valores'][0]['value'];
         }
     }
 }
 
 ## Algoritmo para formatear los datos para la gráfica de tiempo
-function getTimeDataSeriesCPK($json_data)
+function getTimeDataSeriesCPK($json_data, $playerId)
 {
     $data = array();
     foreach ($json_data as $jugador) {
@@ -44,7 +62,7 @@ function getTimeDataSeriesCPK($json_data)
     $series = array();
     $cont = 0;
 
-    $series[0]['name'] = "Player Data";
+    $series[0]['name'] = getPlayerName($playerId);
     foreach ($data as $arrayValores) {
         $series[0]['data'][$cont] = array();
         foreach ($arrayValores as $k => $v) {
@@ -57,60 +75,28 @@ function getTimeDataSeriesCPK($json_data)
 }
 
 ## Algoritmo para formatear los datos para la gráfica de tiempo comparando jugadores
-function getTimeDataSeriesCPKComparePlayers($idPlayer1, $idPlayer2, $idPlayer3)
+function getTimeDataSeriesCPKComparePlayers($selectedPlayers)
 {
     $allData = array();
 
-    if (!empty($idPlayer1)) {
-        $data = array();
-        $json_data = getJsonDataPlayer($idPlayer1);
-        foreach ($json_data as $jugador) {
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("CPK")) == 0) {
-                        $splitFecha = explode(" ", rtrim(strtoupper($jugador[$i]['conf_date'])));
-                        $obj['conf_date'] = rtrim($splitFecha[0]);
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($data, $obj);
+    foreach ($selectedPlayers as $playerId) {
+        if (!empty($playerId)) {
+            $data = array();
+            $json_data = getJsonDataPlayer($playerId);
+            foreach ($json_data as $jugador) {
+                for ($i = 0; $i < sizeof($jugador); $i++) {
+                    if (!empty($jugador[$i]['conf_criteria'])) {
+                        if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("CPK")) == 0) {
+                            $splitFecha = explode(" ", rtrim(strtoupper($jugador[$i]['conf_date'])));
+                            $obj['conf_date'] = rtrim($splitFecha[0]);
+                            $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
+                            array_push($data, $obj);
+                        }
                     }
                 }
             }
+            array_push($allData, $data);
         }
-        array_push($allData, $data);
-    }
-    if (!empty($idPlayer2)) {
-        $data = array();
-        $json_data = getJsonDataPlayer($idPlayer2);
-        foreach ($json_data as $jugador) {
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("CPK")) == 0) {
-                        $splitFecha = explode(" ", rtrim(strtoupper($jugador[$i]['conf_date'])));
-                        $obj['conf_date'] = rtrim($splitFecha[0]);
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($data, $obj);
-                    }
-                }
-            }
-        }
-        array_push($allData, $data);
-    }
-    if (!empty($idPlayer3)) {
-        $data = array();
-        $json_data = getJsonDataPlayer($idPlayer3);
-        foreach ($json_data as $jugador) {
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("CPK")) == 0) {
-                        $splitFecha = explode(" ", rtrim(strtoupper($jugador[$i]['conf_date'])));
-                        $obj['conf_date'] = rtrim($splitFecha[0]);
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($data, $obj);
-                    }
-                }
-            }
-        }
-        array_push($allData, $data);
     }
 
     $series = array();
@@ -118,13 +104,7 @@ function getTimeDataSeriesCPKComparePlayers($idPlayer1, $idPlayer2, $idPlayer3)
     $cont2 = 0;
 
     foreach ($allData as $data) {
-        if($cont2==0){
-            $series[$cont2]['name'] = getPlayerName($idPlayer1);
-        } elseif ($cont2==1){
-            $series[$cont2]['name'] = getPlayerName($idPlayer2);
-        } elseif ($cont2==2){
-            $series[$cont2]['name'] = getPlayerName($idPlayer3);
-        }
+        $series[$cont2]['name'] = getPlayerName($selectedPlayers[$cont2]);
         foreach ($data as $arrayValores) {
             $series[$cont2]['data'][$cont] = array();
             foreach ($arrayValores as $k => $v) {
@@ -135,12 +115,11 @@ function getTimeDataSeriesCPKComparePlayers($idPlayer1, $idPlayer2, $idPlayer3)
         $cont = 0;
         $cont2++;
     }
-
     return $series = json_encode($series);
 }
 
 ## Algoritmo para formatear los datos para la gráfica de tiempo
-function getTimeDataSeriesUrea($json_data)
+function getTimeDataSeriesUrea($json_data, $playerId)
 {
     $data = array();
     foreach ($json_data as $jugador) {
@@ -158,7 +137,7 @@ function getTimeDataSeriesUrea($json_data)
     $series = array();
     $cont = 0;
 
-    $series[0]['name'] = "Player Data";
+    $series[0]['name'] = getPlayerName($playerId);
     foreach ($data as $arrayValores) {
         $series[0]['data'][$cont] = array();
         foreach ($arrayValores as $k => $v) {
@@ -172,60 +151,28 @@ function getTimeDataSeriesUrea($json_data)
 
 
 ## Algoritmo para formatear los datos para la gráfica de tiempo comparando jugadores
-function getTimeDataSeriesUreaComparePlayers($idPlayer1, $idPlayer2, $idPlayer3)
+function getTimeDataSeriesUreaComparePlayers($selectedPlayers)
 {
     $allData = array();
 
-    if (!empty($idPlayer1)) {
-        $json_data = getJsonDataPlayer($idPlayer1);
-        $data = array();
-        foreach ($json_data as $jugador) {
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("Urea")) == 0) {
-                        $splitFecha = explode(" ", rtrim(strtoupper($jugador[$i]['conf_date'])));
-                        $obj['conf_date'] = rtrim($splitFecha[0]);
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($data, $obj);
+    foreach ($selectedPlayers as $playerId) {
+        if (!empty($playerId)) {
+            $json_data = getJsonDataPlayer($playerId);
+            $data = array();
+            foreach ($json_data as $jugador) {
+                for ($i = 0; $i < sizeof($jugador); $i++) {
+                    if (!empty($jugador[$i]['conf_criteria'])) {
+                        if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("Urea")) == 0) {
+                            $splitFecha = explode(" ", rtrim(strtoupper($jugador[$i]['conf_date'])));
+                            $obj['conf_date'] = rtrim($splitFecha[0]);
+                            $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
+                            array_push($data, $obj);
+                        }
                     }
                 }
             }
+            array_push($allData, $data);
         }
-        array_push($allData, $data);
-    }
-    if (!empty($idPlayer2)) {
-        $json_data = getJsonDataPlayer($idPlayer2);
-        $data = array();
-        foreach ($json_data as $jugador) {
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("Urea")) == 0) {
-                        $splitFecha = explode(" ", rtrim(strtoupper($jugador[$i]['conf_date'])));
-                        $obj['conf_date'] = rtrim($splitFecha[0]);
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($data, $obj);
-                    }
-                }
-            }
-        }
-        array_push($allData, $data);
-    }
-    if (!empty($idPlayer3)) {
-        $json_data = getJsonDataPlayer($idPlayer3);
-        $data = array();
-        foreach ($json_data as $jugador) {
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("Urea")) == 0) {
-                        $splitFecha = explode(" ", rtrim(strtoupper($jugador[$i]['conf_date'])));
-                        $obj['conf_date'] = rtrim($splitFecha[0]);
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($data, $obj);
-                    }
-                }
-            }
-        }
-        array_push($allData, $data);
     }
 
     $series = array();
@@ -233,13 +180,7 @@ function getTimeDataSeriesUreaComparePlayers($idPlayer1, $idPlayer2, $idPlayer3)
     $cont2 = 0;
 
     foreach ($allData as $data) {
-        if($cont2==0){
-            $series[$cont2]['name'] = getPlayerName($idPlayer1);
-        } elseif ($cont2==1){
-            $series[$cont2]['name'] = getPlayerName($idPlayer2);
-        } elseif ($cont2==2){
-            $series[$cont2]['name'] = getPlayerName($idPlayer3);
-        }
+        $series[$cont2]['name'] = getPlayerName($selectedPlayers[$cont2]);
         foreach ($data as $arrayValores) {
             $series[$cont2]['data'][$cont] = array();
             foreach ($arrayValores as $k => $v) {
@@ -256,7 +197,7 @@ function getTimeDataSeriesUreaComparePlayers($idPlayer1, $idPlayer2, $idPlayer3)
 
 
 ## Algoritmo para formatear los datos para la gráfica de distribución Urea VS CPK
-function getCpkVsUrea($json_data)
+function getCpkVsUrea($json_data, $playerId)
 {
     $data = array();
     foreach ($json_data as $jugador) {
@@ -282,7 +223,7 @@ function getCpkVsUrea($json_data)
     $series = array();
     $cont = 0;
 
-    $series[0]['name'] = "Player Data";
+    $series[0]['name'] = getPlayerName($playerId);
     $series[0]['color'] = "rgba(223, 83, 83, .5)";
     foreach ($data as $arrayUreaCpkValues) {
         $series[0]['data'][$cont] = array();
@@ -299,84 +240,36 @@ function getCpkVsUrea($json_data)
 
 
 ## Algoritmo para formatear los datos para la gráfica de distribución Urea VS CPK comparando jugadores
-function getCpkVsUreaComparePlayers($idPlayer1, $idPlayer2, $idPlayer3)
+function getCpkVsUreaComparePlayers($selectedPlayers)
 {
     $allData = array();
 
-    if (!empty($idPlayer1)) {
-        $json_data = getJsonDataPlayer($idPlayer1);
-        $data = array();
-        foreach ($json_data as $jugador) {
-            $cpkUreaValues = array();
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("Urea")) == 0) {
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($cpkUreaValues, $obj);
+    foreach ($selectedPlayers as $playerId) {
+        if (!empty($playerId)) {
+            $json_data = getJsonDataPlayer($playerId);
+            $data = array();
+            foreach ($json_data as $jugador) {
+                $cpkUreaValues = array();
+                for ($i = 0; $i < sizeof($jugador); $i++) {
+                    if (!empty($jugador[$i]['conf_criteria'])) {
+                        if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("Urea")) == 0) {
+                            $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
+                            array_push($cpkUreaValues, $obj);
+                        }
                     }
                 }
-            }
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("CPK")) == 0) {
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($cpkUreaValues, $obj);
+                for ($i = 0; $i < sizeof($jugador); $i++) {
+                    if (!empty($jugador[$i]['conf_criteria'])) {
+                        if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("CPK")) == 0) {
+                            $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
+                            array_push($cpkUreaValues, $obj);
+                        }
                     }
                 }
+                array_push($data, $cpkUreaValues);
             }
-            array_push($data, $cpkUreaValues);
+            array_push($allData, $data);
         }
-        array_push($allData, $data);
-    }
-    if (!empty($idPlayer2)) {
-        $json_data = getJsonDataPlayer($idPlayer2);
-        $data = array();
-        foreach ($json_data as $jugador) {
-            $cpkUreaValues = array();
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("Urea")) == 0) {
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($cpkUreaValues, $obj);
-                    }
-                }
-            }
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("CPK")) == 0) {
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($cpkUreaValues, $obj);
-                    }
-                }
-            }
-            array_push($data, $cpkUreaValues);
-        }
-        array_push($allData, $data);
-    }
-    if (!empty($idPlayer3)) {
-        $json_data = getJsonDataPlayer($idPlayer3);
-        $data = array();
-        foreach ($json_data as $jugador) {
-            $cpkUreaValues = array();
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("Urea")) == 0) {
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($cpkUreaValues, $obj);
-                    }
-                }
-            }
-            for ($i = 0; $i < sizeof($jugador); $i++) {
-                if (!empty($jugador[$i]['conf_criteria'])) {
-                    if (strcmp(strtoupper($jugador[$i]['conf_criteria']), strtoupper("CPK")) == 0) {
-                        $obj['conf_value'] = round(floatval(rtrim(strtoupper($jugador[$i]['conf_value']))), 2);
-                        array_push($cpkUreaValues, $obj);
-                    }
-                }
-            }
-            array_push($data, $cpkUreaValues);
-        }
-        array_push($allData, $data);
     }
 
     $series = array();
@@ -387,19 +280,15 @@ function getCpkVsUreaComparePlayers($idPlayer1, $idPlayer2, $idPlayer3)
     $verde = "rgba(117, 152, 117, .5)";
 
     foreach ($allData as $data) {
-        if($cont2==0){
-            $series[$cont2]['name'] = getPlayerName($idPlayer1);
-        } elseif ($cont2==1){
-            $series[$cont2]['name'] = getPlayerName($idPlayer2);
-        } elseif ($cont2==2){
-            $series[$cont2]['name'] = getPlayerName($idPlayer3);
-        }
+        $series[$cont2]['name'] = getPlayerName($selectedPlayers[$cont2]);
         if ($cont2 == 0) {
             $series[$cont2]['color'] = $rojo;
         } elseif ($cont2 == 1) {
             $series[$cont2]['color'] = $azul;
-        } else {
+        } elseif ($cont2 == 2) {
             $series[$cont2]['color'] = $verde;
+        } else {
+            $series[$cont2]['color'] = "rgba(" . (1 + $cont2 * 2) . "," . (2 + $cont2 * 2) . "," . (3 + $cont2 * 2) . ")";
         }
         foreach ($data as $arrayUreaCpkValues) {
             $series[$cont2]['data'][$cont] = array();

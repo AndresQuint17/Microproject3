@@ -20,6 +20,17 @@
     <script type="text/javascript" src="./timeIrregularIntervalsChart.js"></script>
     <script type="text/javascript" src="./scatterPlot.js"></script>
 
+    <?php
+    //Assign the value to 287 or the value defined in the $_POST variable.
+    $idPlayer = 287;
+    if (isset($_POST['selectPlayers'])) {
+        $idPlayer =  $_POST['selectPlayers'];
+    }
+
+    require_once('player.php');
+    require_once('cargarGraficas.php');
+    ?>
+
     <div id="wrapper">
         <div class="container" style="margin-top:10px;">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -48,10 +59,26 @@
             <div class="container">
                 <div class="row">
                     <div class="col-3">
+                        <select class="form-select" name="selectPlayers" id="selectPlayers" size="8" aria-label="size 3 select example">
+                            <?php
+                            $playersNamesAndId = getPlayersNamesAndId($json_data_api_jugadores);
+                            $index = 0;
+                            foreach ($playersNamesAndId as $playerData) {
+                                if ($index == 0) {
+                                    echo '<option selected value="' . $playerData['id'] . '">' . $playerData['fullName'] . '</option>';
+                                } else {
+                                    echo '<option value="' . $playerData['id'] . '">' . $playerData['fullName'] . '</option>';
+                                }
+                                $index++;
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <!--<div class="col-3">
                         <label for="customRange" class="form-label">ID Player</label>
                         <input type="range" name="customRange" id="customRange" class="form-range" min="287" max="316" value="287" onchange="document.getElementById('rangeValue').value=value" />
                         <input type="text" id="rangeValue" name="rangeValue" for="customRange" value="287" disabled="true">
-                    </div>
+                    </div>-->
                     <div class="col-3">
                         <label for="dateDesde" class="form-label">Fecha Desde</label>
                         <input type="date" name="dateDesde" id="dateDesde" class="form-control" value="2017-01-01" min="2017-01-01" max="2017-12-31" />
@@ -70,27 +97,27 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <figure class="highcharts-figure">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="timePlotCPK"></div>
                     </figure>
                 </div>
                 <div class="col-12">
-                    <figure class="highcharts-figure">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="timePlotUrea"></div>
                     </figure>
                 </div>
                 <div class="col-12">
-                    <figure class="highcharts-figure">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="scatterPlotUreaVsCpk"></div>
                     </figure>
                 </div>
-                <div class="col-6">
+                <div class="col-6 div-border-multiplayer">
                     <figure class="highcharts-figure">
                         <div id="GaussianUrea"></div>
                     </figure>
                 </div>
                 <div class="col-6">
-                    <figure class="highcharts-figure">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="GaussianCpk"></div>
                     </figure>
                 </div>
@@ -98,20 +125,11 @@
         </div>
 
         <?php
-        //Assign the value to 287 or the value defined in the $_POST variable.
-        $idPlayer = 287;
-        if (isset($_POST['customRange'])) {
-            $idPlayer =  $_POST['customRange'];
-        }
-
-        require_once('player.php');
-        require_once('cargarGraficas.php');
-
-        time_chart("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPK($json_dataCpkUrea), "CPK units/L");
-        time_chart("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUrea($json_dataCpkUrea), "Urea mmol/L.");
-        scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUrea($json_dataCpkUrea));
-        gaussian_chart("GaussianUrea", "Urea", getGaussianDataUrea($json_dataCpkUrea), "Urea mmol/L", "Distribución Gaussiana");
-        gaussian_chart("GaussianCpk", "CPK", getGaussianDataCPK($json_dataCpkUrea), "CPK units/L", "Distribución Gaussiana");
+        time_chart("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPK($json_dataCpkUrea, $idPlayer), "CPK units/L");
+        time_chart("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUrea($json_dataCpkUrea, $idPlayer), "Urea mmol/L.");
+        scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUrea($json_dataCpkUrea, $idPlayer));
+        gaussian_chart("GaussianUrea", "Urea - " . getPlayerName($idPlayer), getGaussianDataUrea($json_dataCpkUrea), "Urea mmol/L", "Distribución Gaussiana");
+        gaussian_chart("GaussianCpk", "CPK - " . getPlayerName($idPlayer), getGaussianDataCPK($json_dataCpkUrea), "CPK units/L", "Distribución Gaussiana");
 
         ?>
     </div>
