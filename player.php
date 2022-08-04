@@ -370,7 +370,7 @@ function getGaussianDataUrea($json_data, $dateDesde, $dateHasta)
         $cont++;
     }
 
-    return $series = json_encode($series);
+    return $series;
 }
 
 ## Algoritmo para formatear los datos para la gráfica de Gausiana
@@ -396,5 +396,78 @@ function getGaussianDataCPK($json_data, $dateDesde, $dateHasta)
         $cont++;
     }
 
-    return $series = json_encode($series);
+    return $series;
+}
+
+function getMedia($series)
+{
+    return round((array_sum($series) / count($series)), 2);
+}
+
+function getMediana($series)
+{
+    sort($series);
+    if ((count($series) % 2) == 0) {
+        return array_sum(array_slice($series, (count($series) / 2) - 1, 2)) / 2;
+    } else {
+        return array_slice($series, count($series) / 2, 1)[0];
+    }
+}
+
+function getModa($series)
+{
+    $seriesInString = array();
+    foreach ($series as $serie) {
+        array_push($seriesInString, strval($serie));
+    }
+    $datos = array_count_values($seriesInString);
+    arsort($datos);
+
+    $moda = array();
+    $contador = 0;
+    $frecuencia = 0;
+
+    foreach ($datos as $key => $valor) {
+        if ($valor >= $contador) {
+            $moda[] = $key;
+            $contador = $valor;
+            $frecuencia = $valor;
+        }
+    }
+
+    $tipoModa = "";
+    if (count($moda) == 1) {
+        $tipoModa = "Moda Modal";
+    }
+    if (count($moda) == 2) {
+        $tipoModa = "Moda Bimodal";
+    }
+    if (count($moda) == count($datos)) {
+        $tipoModa = "No Hay Moda";
+    }
+    if (count($moda) < count($datos) && count($moda) > 2) {
+        $tipoModa = "Moda Multimodal";
+    }
+
+    if ($tipoModa != "No Hay Moda") {
+        $result = $tipoModa . "<br/><b>";
+        foreach ($moda as $valor) {
+            $result = $result . " " . $valor;
+        }
+        $result = $result . "</b>";
+        $result = $result . "<br/> Con frecuencia de " . $frecuencia . " apariciones";
+        return $result;
+    } else {
+        return "No hay Moda";
+    }
+}
+
+function getVarianza($series, $media)
+{
+    $sum2 = 0;
+    for ($i = 0; $i < count($series); $i++) {
+        $sum2 += ($series[$i] - $media) * ($series[$i] - $media);
+    }
+    $varianza = $sum2 / count($series);
+    return round($varianza, 2);
 }
