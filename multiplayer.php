@@ -69,6 +69,14 @@
                             ?>
                         </select>
                     </div>
+                    <div class="col-2">
+                        <label for="dateDesde" class="form-label">Fecha Desde</label>
+                        <input type="date" name="dateDesde" id="dateDesde" class="form-control" value="2017-01-01" min="2017-01-01" max="2017-12-31" />
+                    </div>
+                    <div class="col-2">
+                        <label for="dateHasta" class="form-label">Fecha Hasta</label>
+                        <input type="date" name="dateHasta" id="dateHasta" class="form-control" value="2017-01-01" min="2017-01-01" max="2017-12-31" />
+                    </div>
                     <div class="col-2 d-flex align-items-center">
                         <button type="submit" id="comparar" class="btn btn-primary">Comparar</button>
                     </div>
@@ -107,10 +115,10 @@
         </div>
 
         <?php
-        if (isset($_POST['selectPlayers'])) {
-            time_chart_compare_players("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPKComparePlayers($_POST['selectPlayers']), "CPK units/L");
-            time_chart_compare_players("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUreaComparePlayers($_POST['selectPlayers']), "Urea mmol/L.");
-            scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUreaComparePlayers($_POST['selectPlayers']));
+        if (isset($_POST['selectPlayers']) && isset($_POST['dateDesde']) && isset($_POST['dateHasta'])) {
+            time_chart_compare_players("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPKComparePlayers($json_data_api_jugadores, $_POST['selectPlayers'], $_POST['dateDesde'], $_POST['dateHasta']), "CPK units/L");
+            time_chart_compare_players("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUreaComparePlayers($json_data_api_jugadores, $_POST['selectPlayers'], $_POST['dateDesde'], $_POST['dateHasta']), "Urea mmol/L.");
+            scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUreaComparePlayers($json_data_api_jugadores, $_POST['selectPlayers'], $_POST['dateDesde'], $_POST['dateHasta']));
             //gaussian_chart("GaussianUrea", "Urea", getGaussianDataUreaComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "Urea mmol/L", "Distribución Gaussiana");
             //gaussian_chart("GaussianCpk", "CPK", getGaussianDataCPKComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "CPK units/L", "Distribución Gaussiana");
         }

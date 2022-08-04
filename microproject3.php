@@ -111,8 +111,8 @@
                         <div id="scatterPlotUreaVsCpk"></div>
                     </figure>
                 </div>
-                <div class="col-6 div-border-multiplayer">
-                    <figure class="highcharts-figure">
+                <div class="col-6">
+                    <figure class="highcharts-figure div-border-multiplayer">
                         <div id="GaussianUrea"></div>
                     </figure>
                 </div>
@@ -125,11 +125,13 @@
         </div>
 
         <?php
-        time_chart("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPK($json_dataCpkUrea, $idPlayer), "CPK units/L");
-        time_chart("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUrea($json_dataCpkUrea, $idPlayer), "Urea mmol/L.");
-        scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUrea($json_dataCpkUrea, $idPlayer));
-        gaussian_chart("GaussianUrea", "Urea - " . getPlayerName($idPlayer), getGaussianDataUrea($json_dataCpkUrea), "Urea mmol/L", "Distribución Gaussiana");
-        gaussian_chart("GaussianCpk", "CPK - " . getPlayerName($idPlayer), getGaussianDataCPK($json_dataCpkUrea), "CPK units/L", "Distribución Gaussiana");
+        if (isset($_POST['dateDesde']) && isset($_POST['dateHasta'])) {
+            time_chart("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPK($json_data_api_jugadores, $json_dataCpkUrea, $idPlayer, $_POST['dateDesde'], $_POST['dateHasta']), "CPK units/L");
+            time_chart("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUrea($json_data_api_jugadores, $json_dataCpkUrea, $idPlayer, $_POST['dateDesde'], $_POST['dateHasta']), "Urea mmol/L.");
+            scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUrea($json_data_api_jugadores, $json_dataCpkUrea, $idPlayer, $_POST['dateDesde'], $_POST['dateHasta']));
+            gaussian_chart("GaussianUrea", "Urea - " . getPlayerName($json_data_api_jugadores, $idPlayer), getGaussianDataUrea($json_dataCpkUrea, $_POST['dateDesde'], $_POST['dateHasta']), "Urea mmol/L", "Distribución Gaussiana");
+            gaussian_chart("GaussianCpk", "CPK - " . getPlayerName($json_data_api_jugadores, $idPlayer), getGaussianDataCPK($json_dataCpkUrea, $_POST['dateDesde'], $_POST['dateHasta']), "CPK units/L", "Distribución Gaussiana");
+        }
 
         ?>
     </div>
