@@ -101,16 +101,114 @@
                         <div id="scatterPlotUreaVsCpk"></div>
                     </figure>
                 </div>
-                <div class="col-6">
-                    <figure class="highcharts-figure div-border-multiplayer">
-                        <div id="GaussianUrea"></div>
-                    </figure>
-                </div>
-                <div class="col-6">
-                    <figure class="highcharts-figure div-border-multiplayer">
-                        <div id="GaussianCpk"></div>
-                    </figure>
-                </div>
+                <?php
+                if (isset($_POST['selectPlayers']) && isset($_POST['dateDesde']) && isset($_POST['dateHasta'])) {
+                    foreach ($_POST['selectPlayers'] as $id) {
+                        echo '<div class="col-6">
+                        <div class="row div-border-multiplayer">
+                            <div class="col-12">
+                                <figure class="highcharts-figure">
+                                    <div id="GaussianUrea' . $id . '"></div>
+                                </figure>
+                            </div>';
+                            $seriesGaussianUrea = getGaussianDataUrea($json_dataCpkUrea, $_POST['dateDesde'], $_POST['dateHasta']);
+                            gaussian_chart("GaussianUrea" . $id, "Urea - " . getPlayerName($json_data_api_jugadores, $id), json_encode($seriesGaussianUrea), "Urea mmol/L", "Distribución Gaussiana");
+                            $mediaUrea = getMedia($seriesGaussianUrea);
+                            $varianzaUrea = getVarianza($seriesGaussianUrea, $mediaUrea);
+                            echo '<div class="col-12">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col">UREA</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">µ</th>
+                                                <td>MEDIA</td>
+                                                <td>'; echo $mediaUrea; echo '</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">X̅</th>
+                                                <td>MEDIANA</td>
+                                                <td>'; echo getMediana($seriesGaussianUrea); echo '</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">M</th>
+                                                <td>MODA</td>
+                                                <td>'; echo getModa($seriesGaussianUrea); echo '</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">σ2</th>
+                                                <td>VARIANZA</td>
+                                                <td>'; echo $varianzaUrea; echo '</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">σ</th>
+                                                <td>DESVIACION ESTANDAR</td>
+                                                <td>'; echo round(sqrt($varianzaUrea), 2); echo '</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row div-border-multiplayer">
+                            <div class="col-12">
+                                <figure class="highcharts-figure">
+                                    <div id="GaussianCpk' . $id . '"></div>
+                                </figure>
+                            </div>';
+                            $seriesGaussianCpk = getGaussianDataCPK($json_dataCpkUrea, $_POST['dateDesde'], $_POST['dateHasta']);
+                            gaussian_chart("GaussianCpk" . $id, "CPK - " . getPlayerName($json_data_api_jugadores, $id), json_encode($seriesGaussianCpk), "CPK units/L", "Distribución Gaussiana");
+                            $mediaCpk = getMedia($seriesGaussianCpk);
+                            $varianzaCpk = getVarianza($seriesGaussianCpk, $mediaCpk);
+                            echo '<div class="col-12">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col">UREA</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">µ</th>
+                                                <td>MEDIA</td>
+                                                <td>'; echo $mediaCpk; echo '</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">X̅</th>
+                                                <td>MEDIANA</td>
+                                                <td>'; echo getMediana($seriesGaussianCpk); echo '</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">M</th>
+                                                <td>MODA</td>
+                                                <td>'; echo getModa($seriesGaussianCpk); echo '</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">σ2</th>
+                                                <td>VARIANZA</td>
+                                                <td>'; echo $varianzaCpk; echo '</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">σ</th>
+                                                <td>DESVIACION ESTANDAR</td>
+                                                <td>'; echo round(sqrt($varianzaCpk), 2); echo '</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>';
+                    }
+                }
+                ?>
             </div>
         </div>
 
@@ -119,8 +217,6 @@
             time_chart_compare_players("timePlotCPK", "CPK Data Time Chart", getTimeDataSeriesCPKComparePlayers($json_data_api_jugadores, $_POST['selectPlayers'], $_POST['dateDesde'], $_POST['dateHasta']), "CPK units/L");
             time_chart_compare_players("timePlotUrea", "Urea Data Time Chart", getTimeDataSeriesUreaComparePlayers($json_data_api_jugadores, $_POST['selectPlayers'], $_POST['dateDesde'], $_POST['dateHasta']), "Urea mmol/L.");
             scatter_chart("scatterPlotUreaVsCpk", "Urea VS CPK", getCpkVsUreaComparePlayers($json_data_api_jugadores, $_POST['selectPlayers'], $_POST['dateDesde'], $_POST['dateHasta']));
-            //gaussian_chart("GaussianUrea", "Urea", getGaussianDataUreaComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "Urea mmol/L", "Distribución Gaussiana");
-            //gaussian_chart("GaussianCpk", "CPK", getGaussianDataCPKComparePlayers($_POST['firstPlayer'], $_POST['secondPlayer'], $_POST['thirdPlayer']), "CPK units/L", "Distribución Gaussiana");
         }
         ?>
     </div>
